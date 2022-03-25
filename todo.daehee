@@ -1,0 +1,3 @@
+1. turns out target binary (ocr1100ctrl) is compatible to ordinary ELF32 object file.
+2. link the target binary with wrapper (gcc -o wrap ocr1100ctrl wrap.c -m32)
+3. there are lot of external symbols -> make fake functions. infer function types from IDA.
