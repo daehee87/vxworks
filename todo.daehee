@@ -1,3 +1,5 @@
 1. turns out target binary (ocr1100ctrl) is compatible to ordinary ELF32 object file.
 2. link the target binary with wrapper (gcc -o wrap ocr1100ctrl wrap.c -m32)
 3. there are lot of external symbols -> make fake functions. infer function types from IDA.
+4. target binary is based on C++. we need to compile the wrapper via g++, so put extern "C" to C functions.
+5. make fake C++ functions by providing namespace and Class
