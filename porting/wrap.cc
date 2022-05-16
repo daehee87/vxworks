@@ -4,6 +4,7 @@
 extern "C"{
 
 //{{ override missing import functions here! (infer types from IDA hexray)
+int _ZNSt8_LocinfoC1ERKSs(){return 0;}
 int ioTaskStdGet(int a, int b){  return 0;  }
 void ioTaskStdSet(int a, int b, int c){}
 void edrErrorInjectStub(int a, char b, int c, int d, int e, int f, char g){}
@@ -312,7 +313,8 @@ namespace std{
     int _BADOFF=0;
     class string{ 
         public:
-        string(){} 
+        string(){}
+        string (const std::string &__str){}
     };
     class _String_base
     {
@@ -320,13 +322,12 @@ namespace std{
         void _Xlen(void) const;
         void _Xran(void) const;
     };
+
     class _Locinfo
     {
     public:
-       _Locinfo(); // default constructor
-       _Locinfo(const std::string&){} 
-       _Locinfo(std::string&){} 
-       _Locinfo(std::string){} 
+       constexpr _Locinfo(const std::string&);
+       _Locinfo(std::string const *);
        ~_Locinfo();
     };
     class ios_base
@@ -364,8 +365,7 @@ void std::_String_base::_Xran(void) const
 //_Xout_of_range("invalid string position");
 }
 
-void operator delete(void*, void*)
-{}
+void operator delete(void*, void*){}
 
 void std::ios_base::_Init(void)
 {}
@@ -373,8 +373,10 @@ void std::ios_base::_Init(void)
 void std::ios_base::_Addstd(void)
 {}
 
-std::_Locinfo::_Locinfo(){}
 std::_Locinfo::~_Locinfo(){}
+constexpr std::_Locinfo::_Locinfo(const std::string&){} 
+std::_Locinfo::_Locinfo(std::string const *){} 
+//std::_Locinfo::_Locinfo(){} 
 
 void std::locale::facet::_Register(){}
 void std::locale::_Getfacet(unsigned int) const{}
@@ -383,7 +385,8 @@ void std::ios_base::clear(std::_Iosb<int>::_Iostate, bool){}
 void DSMain(){};
 int main(){
     // once porting is done, we call any exported function here.
-    DSMain();
+    printf("porting OK\n");
+    //DSMain();
     return 0;
 }
 

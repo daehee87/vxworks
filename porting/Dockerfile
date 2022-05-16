@@ -12,6 +12,7 @@ WORKDIR /
 ADD wrap.cc /wrap.cc
 ADD make.sh /make.sh
 ADD ocr1100Ctlr.ubuntu /ocr1100Ctlr.ubuntu
+ADD hook.c /hook.c
 
 STOPSIGNAL SIGTERM
 CMD ["/make.sh"]

@@ -2,4 +2,8 @@
 2. link the target binary with wrapper (gcc -o wrap ocr1100ctrl wrap.c -m32)
 3. there are lot of external symbols -> make fake functions. infer function types from IDA.
 4. target binary is based on C++. we need to compile the wrapper via g++, so put extern "C" to C functions.
-5. make fake C++ functions by providing namespace and Class
+5. make fake C++ functions by providing namespace and Class -> done.
+6. C++ initialization (libc_start_main) failes due to lack of C++ implementation code
+7. to circumvent this, we hook libc_start_main via LD_PRELOAD and write our fuzzer stub there.
+8. connect our fuzzer stub and AFL++
+
