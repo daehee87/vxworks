@@ -1,7 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 extern "C"{
+
+extern void DSMain();
+extern int __CT_get_option();
 
 //{{ override missing import functions here! (infer types from IDA hexray)
 int _ZNSt8_LocinfoC1ERKSs(){return 0;}
@@ -382,11 +387,45 @@ void std::locale::facet::_Register(){}
 void std::locale::_Getfacet(unsigned int) const{}
 void std::ios_base::clear(std::_Iosb<int>::_Iostate, bool){}
 
-void DSMain(){};
-int main(){
+// sample function to test if AFL working OK.
+void fuzz_test(char* data, int size){
+  unsigned int* boom = (unsigned int*)0xdeadbeef;
+  if (size > 0 && data[0] == 'H')
+    if (size > 1 && data[1] == 'I')
+       if (size > 2 && data[2] == '!')
+           *boom = 0xcafebabe;
+}
+
+
+
+
+// hook libc_start_main via ld_preload and force it to call this main.
+// we skip annoying C++ initialization
+int main(int argc, char* argv[]){
     // once porting is done, we call any exported function here.
-    printf("porting OK\n");
-    //DSMain();
+    printf("VxWorks to Linux porting ok.\n");
+
+    // if there is no argv[1], we assume AFL's input is stdin
+    if(argv[1] == NULL){
+        // invoke target VxWorks task here.
+        __CT_get_option();      
+        return 0;
+    }
+
+    // otherwise, we take argv[1] as AFL input
+	FILE* fp = fopen(argv[1], "rb");
+	fseek(fp, 0, SEEK_END);
+	int seed_size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	char* seed = (char*)malloc(seed_size);
+	unsigned int r = fread(seed, 1, seed_size, fp);
+	printf("read %d input bytes from AFL\n", r);
+
+	// start fuzzing.
+    fuzz_test(seed, seed_size);
+
+    printf("execution complete!\n");
     return 0;
 }
 

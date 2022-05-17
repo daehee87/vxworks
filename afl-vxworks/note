@@ -1,0 +1,1 @@
+do echo "core-%e" > /proc/sys/kernel/core_pattern outside docker as root.
