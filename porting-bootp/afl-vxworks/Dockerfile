@@ -7,8 +7,9 @@ RUN apt update && apt-get install -y git wget unzip libglib2.0-dev libeina-dev q
 RUN apt-get install -y llvm clang ninja-build
 
 # setup AFL++
-#ADD AFLplusplus /AFLplusplus
-RUN git clone https://github.com/AFLplusplus/AFLplusplus.git
+RUN echo 1
+ADD AFLplusplus /AFLplusplus
+#RUN git clone https://github.com/AFLplusplus/AFLplusplus.git
 WORKDIR /AFLplusplus
 RUN AFL_NO_X86=1 make -j4
 WORKDIR /AFLplusplus/qemu_mode
