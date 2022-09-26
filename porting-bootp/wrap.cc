@@ -403,11 +403,35 @@ void fuzz_test(char* data, int size){
 
 extern "C" int bootpServer(char *filename);
 
+#include <sys/time.h>		/* for setitimer */
+#include <unistd.h>		/* for pause */
+#include <signal.h>		/* for signal */
+
+#define INTERVAL 100
+void timer_callback(void){
+  _exit(0);
+}
+
+
 // hook libc_start_main via ld_preload and force it to call this main.
 // we skip annoying C++ initialization
 int main(int argc, char* argv[]){
     // once porting is done, we call any exported function here.
     printf("Start Bootp Server Fuzzer.\n");
+
+  struct itimerval it_val;	/* for setting itimer */
+
+  if (signal(SIGALRM, (void (*)(int)) timer_callback) == SIG_ERR) {
+    perror("Unable to catch SIGALRM");
+    exit(1);
+  }
+  it_val.it_value.tv_sec =     INTERVAL/1000;
+  it_val.it_value.tv_usec =    (INTERVAL*1000) % 1000000;
+  it_val.it_interval = it_val.it_value;
+  if (setitimer(ITIMER_REAL, &it_val, NULL) == -1) {
+    perror("error calling setitimer()");
+    exit(1);
+  }
 
     bootpServer(argv[1]);
     return 0;

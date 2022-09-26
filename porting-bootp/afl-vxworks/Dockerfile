@@ -7,12 +7,12 @@ RUN apt update && apt-get install -y git wget unzip libglib2.0-dev libeina-dev q
 RUN apt-get install -y llvm clang ninja-build
 
 # setup AFL++
+#ADD AFLplusplus /AFLplusplus
 RUN git clone https://github.com/AFLplusplus/AFLplusplus.git
 WORKDIR /AFLplusplus
-ADD afl-fuzz-init.c /AFLplusplus/src/
 RUN AFL_NO_X86=1 make -j4
 WORKDIR /AFLplusplus/qemu_mode
-RUN apt-get install -y python3-pip
+RUN apt update && apt-get install -y python3-pip
 RUN pip3 install ninja
 RUN CPU_TARGET=i386 ./build_qemu_support.sh
 WORKDIR /AFLplusplus
